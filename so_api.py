@@ -25,7 +25,8 @@ def filter_data(data):
 def get_answers(ids):
     format_ids = ';'.join([str(i) for i in ids])
     params = {
-        'site':'stackoverflow'
+        'site':'stackoverflow',
+        'filter':'withbody'
     }
     answs = so_request('questions/' + format_ids + '/answers', params)
     for a in answs['items']:
@@ -35,12 +36,12 @@ def query_so(q):
     params = {
         'q':q,
         'accepted':'true',
-        'site':'stackoverflow'
+        'site':'stackoverflow',
+        'filter':'withbody'
     }
     json_data = so_request("search/advanced", params)['items']
     filtered = filter_data(json_data)
     ids = collect_ids(filtered)
     answers = get_answers(ids)
-    print answers
 
 query_so("python")
