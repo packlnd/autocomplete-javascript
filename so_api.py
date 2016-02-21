@@ -1,5 +1,6 @@
 import requests
 import json
+import BeautifulSoup
 
 prefix = "https://api.stackexchange.com/2.2"
 
@@ -22,26 +23,38 @@ def filter_data(data):
     #TODO: Currently no filter
     return data
 
-def get_answers(ids):
-    format_ids = ';'.join([str(i) for i in ids])
-    params = {
-        'site':'stackoverflow',
-        'filter':'withbody'
-    }
-    answs = so_request('questions/' + format_ids + '/answers', params)
-    for a in answs['items']:
-        print a
-
-def query_so(q):
+def get_questions(q):
     params = {
         'q':q,
         'accepted':'true',
         'site':'stackoverflow',
         'filter':'withbody'
     }
-    json_data = so_request("search/advanced", params)['items']
+    return so_request("search/advanced", params)['items']
+
+def get_answers(ids):
+    format_ids = ';'.join([str(i) for i in ids])
+    params = {
+        'site':'stackoverflow',
+        'filter':'withbody'
+    }
+    return so_request('questions/' + format_ids + '/answers', params)['items']
+
+def get_code(body):
+    soup = BeautifulSoup(body)
+    code_tags = soup.findAll('code')
+    print code_tags
+
+def print_code(answers):
+    for answer in answers:
+        print get_code(answer['body'])
+    print '\n'
+
+def query_so(q):
+    json_data = get_questions(q)
     filtered = filter_data(json_data)
     ids = collect_ids(filtered)
     answers = get_answers(ids)
+    print_code(answers)
 
-query_so("python")
+query_so("get qury parameters")
