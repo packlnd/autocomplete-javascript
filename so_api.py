@@ -1,6 +1,6 @@
 import requests
 import json
-import BeautifulSoup
+from BeautifulSoup import BeautifulSoup
 
 prefix = "https://api.stackexchange.com/2.2"
 
@@ -26,11 +26,15 @@ def filter_data(data):
 def get_questions(q):
     params = {
         'q':q,
+        'views':100,
         'accepted':'true',
         'site':'stackoverflow',
-        'filter':'withbody'
+        'filter':'withbody',
+        'sort':'relevance'
     }
-    return so_request("search/advanced", params)['items']
+    req = so_request("search/advanced", params)
+    print req
+    return req['items']
 
 def get_answers(ids):
     format_ids = ';'.join([str(i) for i in ids])
@@ -38,7 +42,9 @@ def get_answers(ids):
         'site':'stackoverflow',
         'filter':'withbody'
     }
-    return so_request('questions/' + format_ids + '/answers', params)['items']
+    req = so_request('questions/' + format_ids + '/answers', params)
+    print req
+    return req['items']
 
 def get_code(body):
     soup = BeautifulSoup(body)
@@ -50,11 +56,15 @@ def print_code(answers):
         print get_code(answer['body'])
     print '\n'
 
+def fix(q): #TODO Better name
+    return q.replace(' ', '+')
+
 def query_so(q):
+    q = fix(q)
     json_data = get_questions(q)
     filtered = filter_data(json_data)
     ids = collect_ids(filtered)
     answers = get_answers(ids)
     print_code(answers)
 
-query_so("get qury parameters")
+query_so("get query parameters")
