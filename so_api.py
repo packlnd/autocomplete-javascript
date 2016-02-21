@@ -33,7 +33,6 @@ def get_questions(q):
         'sort':'relevance'
     }
     req = so_request("search/advanced", params)
-    print req
     return req['items']
 
 def get_answers(ids):
@@ -43,24 +42,23 @@ def get_answers(ids):
         'filter':'withbody'
     }
     req = so_request('questions/' + format_ids + '/answers', params)
-    print req
     return req['items']
 
 def get_code(body):
     soup = BeautifulSoup(body)
-    code_tags = soup.findAll('code')
-    print code_tags
+    return soup.findAll('code')
 
 def print_code(answers):
     for answer in answers:
-        print get_code(answer['body'])
-    print '\n'
+        code = get_code(answer['body'])
+        print str(code)
+        print '\n'
 
-def fix(q): #TODO Better name
+def prepare_query(q):
     return q.replace(' ', '+')
 
 def query_so(q):
-    q = fix(q)
+    q = prepare_query(q)
     json_data = get_questions(q)
     filtered = filter_data(json_data)
     ids = collect_ids(filtered)
