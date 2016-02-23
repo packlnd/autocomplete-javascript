@@ -58,6 +58,7 @@ def prepare_query(q):
     return q.replace(' ', '+')
 
 def query_so(q):
+    # Current approach gives answers to all SO questions matching search query
     q = prepare_query(q)
     json_data = get_questions(q)
     filtered = filter_data(json_data)
