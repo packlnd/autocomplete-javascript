@@ -2,10 +2,10 @@ import requests
 import json
 from BeautifulSoup import BeautifulSoup
 
-prefix = "https://api.stackexchange.com/2.2"
+base_url = "https://api.stackexchange.com/2.2"
 
 def so_request(ep, params={}):
-    url = "%s/%s" % (prefix, ep)
+    url = "%s/%s" % (base_url, ep)
     if len(params) >= 1:
         url += '?'
         url += '&'.join(['%s=%s' % (k,v)
@@ -48,11 +48,8 @@ def get_code(body):
     soup = BeautifulSoup(body)
     return soup.findAll('code')
 
-def print_code(answers):
-    for answer in answers:
-        code = get_code(answer['body'])
-        print str(code)
-        print '\n'
+def get_list_of_code(answers):
+    return [get_code(a['body']) for a in answers]
 
 def prepare_query(q):
     return q.replace(' ', '+')
@@ -64,6 +61,6 @@ def query_so(q):
     filtered = filter_data(json_data)
     ids = collect_ids(filtered)
     answers = get_answers(ids)
-    print_code(answers)
+    return get_list_of_code(answers)
 
 query_so("get query parameters")
