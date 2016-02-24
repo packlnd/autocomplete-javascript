@@ -10,34 +10,44 @@ class SnippetCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         """Called when the command is run."""
         self.edit = edit
-        sublime.active_window().show_input_panel("Please enter your query:", "", on_text_done, None, None)
+        sublime.active_window().show_input_panel("Please enter your query:", "", self.on_text_done(), None, None)
 
-        # Selection to be made later contains the code snippets
-        self.selection = ['a','b','c']
+    def on_text_done(self):
+        def on_done(text):
+            # call the method that returns the code snippets
+            choices = ['a', 'b', 'c']
+            
+            self.view.run_command('snippet_selection_helper', {
+                'args': {
+                    'choices': choices
+                }
+            })
+
+        return on_done
+        
+
+class SnippetSelectionHelperCommand(sublime_plugin.TextCommand):
+
+    def run(self, edit, args):
+        """Called when the command is run."""
+        self.choices = args['choices']
+        self.edit = edit
 
         sublime.active_window().show_quick_panel(
-            self.selection, self.on_done_call_func(self.selection, self.insert))
+            self.choices, self.on_done_call_func(self.choices))
 
-    def on_text_done(text):
-        #call the method that returns the code snippets
-        return ['a','b','c']
-
-
-
-    def on_done_call_func(self, choices, func):
+    def on_done_call_func(self, choices):
         """Return a function which is used with sublime list picking."""
         def on_done(index):
             if index >= 0:
-                return func(choices[index])
+                return self.insert(choices[index])
 
         return on_done
 
     def insert(self, choice):
-       
         self.view.run_command('snippet_insert_helper', {
             'args': {
                 'choice': choice
-                #return choice to the program that learns?
             }
         })
 
@@ -45,6 +55,6 @@ class SnippetInsertHelperCommand(sublime_plugin.TextCommand):
 
     def run(self, edit, args):
         choice = args['choice']
-        content = choice + ' = 0'
+        content = choice 
         position = self.view.sel()[0].begin()
         self.view.insert(edit, position, content)
