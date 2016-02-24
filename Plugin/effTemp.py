@@ -26,7 +26,7 @@ class SnippetCommand(sublime_plugin.TextCommand):
         return on_done
 
     def insert(self, choice):
-        """Insert some code."""
+       
         self.view.run_command('snippet_insert_helper', {
             'args': {
                 'choice': choice
