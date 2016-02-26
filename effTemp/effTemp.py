@@ -3,6 +3,8 @@ import sublime_plugin
 import os
 import re
 import functools
+import urllib2
+import json
 
 class SnippetCommand(sublime_plugin.TextCommand):
 
@@ -15,7 +17,23 @@ class SnippetCommand(sublime_plugin.TextCommand):
     def on_text_done(self):
         def on_done(text):
             # call the method that returns the code snippets
-            choices = ['a', 'b', 'c']
+            text = text.replace(' ', '%20')
+            text = 'http://recycle.cs.washington.edu:5000/search?query=' + text + '&token=cse504'
+            f = urllib2.urlopen(text)
+            choices = []
+            data = json.load(f)
+            print data 
+            for d in data: 
+                id = d.pop(0)
+                code = d.pop()
+                code = ' '.join(code)
+                # code = code.replace('\n', ' ')
+                choices.append(code)
+
+
+                
+
+
             
             self.view.run_command('snippet_selection_helper', {
                 'args': {
