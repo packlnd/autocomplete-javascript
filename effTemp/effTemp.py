@@ -13,7 +13,6 @@ except:
 
 class SnippetCommand(sublime_plugin.TextCommand):
 
-
     def run(self, edit):
         """Called when the command is run."""
         self.edit = edit
@@ -28,14 +27,14 @@ class SnippetCommand(sublime_plugin.TextCommand):
             f = urllib2.urlopen(text)
             choices = []
             data = json.load(f)
-            print data 
-            for d in data: 
+            print data
+            for d in data:
                 id = d.pop(0)
                 code = d.pop()
                 code = ' '.join(code)
                 # code = code.replace('\n', ' ')
                 choices.append(code)
-            
+
             self.view.run_command('snippet_selection_helper', {
                 'args': {
                     'choices': choices,
@@ -44,7 +43,7 @@ class SnippetCommand(sublime_plugin.TextCommand):
             })
 
         return on_done
-        
+
 
 class SnippetSelectionHelperCommand(sublime_plugin.TextCommand):
 
@@ -86,7 +85,7 @@ class SnippetInsertHelperCommand(sublime_plugin.TextCommand):
 
     def run(self, edit, args):
         choice = args['choice']
-        content = choice 
+        content = choice
         position = self.view.sel()[0].begin()
         self.view.insert(edit, position, content)
 
