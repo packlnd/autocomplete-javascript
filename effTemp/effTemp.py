@@ -74,7 +74,6 @@ class SnippetSelectionHelperCommand(sublime_plugin.TextCommand):
     def insert(self, choice, index):
         self.view.run_command('snippet_insert_helper', {
             'args': {
-            #TODO: return choice to the learning algorithm
                 'choice': choice,
                 'index': index,
                 'query': self.query
