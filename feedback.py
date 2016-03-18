@@ -74,22 +74,26 @@ def test():
 def search_feedback():
     query = request.args.get('query', None)
     token = request.args.get('token', None)
+    only_raw = request.args.get('raw', 'False') == True
+
     if query is None or token != 'cse504':
         return 'Query cannot be empty.'
 
-    es = get_es()
-
-    search = {
-        'query': {
-            'match': {
-                'keywords': query
+    ids = []
+    if not only_raw:
+        es = get_es()
+    
+        search = {
+            'query': {
+                'match': {
+                    'keywords': query
+                }
             }
         }
-    }
-
-    results = es.search(index='feedback', doc_type='event', body=search, size=5, _source=False)
-
-    ids = [int(res['_id']) for res in results['hits']['hits']]
+    
+        results = es.search(index='feedback', doc_type='event', body=search, size=5, _source=False)
+    
+        ids = [int(res['_id']) for res in results['hits']['hits']]
 
     # Now query SO for more results
     return json.dumps(so_api.query(query, ids))
